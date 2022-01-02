@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dancing Polygons</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        div.panel {
+            position: absolute;
+            display: inline;
+            float: left;
+            z-index: -1;
+            font-family: sans-serif;
+            font-size: smaller;
+            user-select: none;
+            border: 1px solid grey;
+            padding: 0.2em;
+        }
+
+        div.range {
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+            justify-content: flex;
+        }
+
+        input.slider {
+            cursor: pointer;
+        }
+
+        .container {
+            position: relative;
+        }
+
+        .container div.panel,
+        canvas {
+            position: absolute;
+        }
+
+        canvas {
+            z-index: -1;
+        }
+
+        label {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="panel">
+            <canvas id="canvas"></canvas>
+            <div class="range">
+                <label for="n1">A:</label>
+                <input type="range" min="1" max="13" value="4" class="slider" id="n1" name="n1"><br>
+                <span id="n1value">4</span>
+            </div>
+            <div class="range">
+                <label for="n2">B:</label>
+                <input type="range" min="1" max="13" value="3" class="slider" id="n2" name="n2">
+                <span id="n2value">3</span>
+            </div>
+            <div>
+                <label title="Show dots (shortcut: d)">
+                    <input type="checkbox" name="show-dots" id="show-dots" checked>
+                    Dots
+                </label>
+            </div>
+            <div>
+                <label title="Show path (shortcut: p)">
+                    <input type="checkbox" name="path" id="path" checked>
+                    Path
+                </label>
+            </div>
+            <div>
+                <label title="Show star (shortcut: s)">
+                    <input type="checkbox" name="show-star" id="show-star">
+                    Star
+                </label>
+            </div>
+            <div>
+                <label title="Show shape A (shortcut: a)">
+                    <input type="checkbox" name="shape-a" id="shape-a" checked>
+                    Shape A
+                </label>
+            </div>
+            <div>
+                <label title="Show shape B (shortcut: b)">
+                    <input type="checkbox" name="shape-b" id="shape-b" checked>
+                    Shape B
+                </label>
+            </div>
+            <div>
+                <label title="Show circles (shortcut: c)">
+                    <input type="checkbox" name="show-circles" id="show-circles">
+                    Circles
+                </label>
+            </div>
+            <div>
+                <label title="Cycle line shapes in and out (shortcut: y)">
+                    <input type="checkbox" name="cycle-shapes" id="cycle-shapes">
+                    Cycle shapes
+                </label>
+            </div>
+            <script src="dancing-polygons.js"></script>
+        </div>
+</body>
+
+</html>
