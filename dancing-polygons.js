@@ -28,7 +28,7 @@ function gcd(a, b) {
 
         ct.restore(); // restore default transformation
         ct.save(); // save default again
-        ct.translate(dpr * window.innerWidth / 2, dpr * window.innerHeight / 2);
+        ct.translate(window.innerWidth / 2, window.innerHeight / 2);
         ct.scale(scale, -scale);
     }
     window.addEventListener('resize', resize);
