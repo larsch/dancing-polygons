@@ -276,7 +276,7 @@
                 for (let j = 0; j < n2; ++j) {
                     const pt = pts[i * n2 + j];
                     ct.moveTo(...pt);
-                    ct.arc(...pt, 4 / scale, 0, tau, false);
+                    ct.arc(...pt, 4 * lineWidthScale, 0, tau, false);
                 }
             }
             ct.fill();
