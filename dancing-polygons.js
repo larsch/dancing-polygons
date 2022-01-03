@@ -24,7 +24,7 @@
         ca.width = dpr * window.innerWidth;
         ca.height = dpr * window.innerHeight;
         let dim = Math.min(ca.width, ca.height);
-        scale = dim * 0.4;
+        scale = dim * 0.48;
         lineWidthScale = dpr / scale;
 
         ct.restore(); // restore default transformation
