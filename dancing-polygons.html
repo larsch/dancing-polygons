@@ -24,7 +24,28 @@
             user-select: none;
             border: 1px solid grey;
             padding: 0.2em;
+
         }
+
+        a.github {
+            float: right;
+            font-family: sans-serif;
+            font-size: 80%;
+            border-radius: 4px;
+            background: #999999;
+            background: rgb(156, 156, 156);
+            background: linear-gradient(153deg, rgba(156, 156, 156, 1) 0%, rgba(113, 113, 113, 1) 100%);
+            color: white;
+            padding: 1px 3px 1px 3px;
+            margin: 1px;
+            text-shadow: 0px 1px 1px #555555;
+            text-decoration: none;
+        }
+
+        a.github:visited {
+            color: white;
+        }
+
 
         div.range {
             display: flex;
@@ -42,7 +63,7 @@
         }
 
         canvas {
-            display:inline;
+            display: inline;
             margin: 0;
         }
 
@@ -108,8 +129,8 @@
                     Cycle shapes
                 </label>
             </div>
-            <a href="https://github.com/larsch/dancing-polygons">github.com/larsch/dancing-polygons</a>
         </div>
+        <a class="github" href="https://github.com/larsch/dancing-polygons">github.com/larsch</a>
         <canvas id="canvas"></canvas>
         <script src="dancing-polygons.js"></script>
 </body>
