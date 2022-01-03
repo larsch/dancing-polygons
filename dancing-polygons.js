@@ -1,35 +1,37 @@
-function gcd(a, b) {
-    while (b !== 0) {
-        let t = b;
-        b = a % b;
-        a = t;
-    }
-    return a;
-}
-
 (function () {
+    function gcd(a, b) {
+        while (b !== 0) {
+            let t = b;
+            b = a % b;
+            a = t;
+        }
+        return a;
+    }
+
     let ca = document.getElementById("canvas");
     let ct = ca.getContext("2d");
     let tau = 6.28318530718;
     const colors = ['#7FBD6B', '#6BA8BD', '#A86BBD', '#BD806B'];
 
     let scale = 1.0;
-    let translatex = 1.0;
-    let translatey = 1.0;
+    let lineWidthScale = 1.0;
 
     function resize() {
-        var dpr = window.devicePixelRatio || 1;
-        ca.style.width = window.innerWidth;
-        ca.style.height = window.innerHeight;
+        let dpr;
+        dpr = window.devicePixelRatio || 1;
+        ca.style.width = window.innerWidth + "px";
+        ca.style.height = window.innerHeight + "px";
         ca.width = dpr * window.innerWidth;
         ca.height = dpr * window.innerHeight;
         let dim = Math.min(ca.width, ca.height);
         scale = dim * 0.4;
+        lineWidthScale = dpr / scale;
 
         ct.restore(); // restore default transformation
         ct.save(); // save default again
-        ct.translate(window.innerWidth / 2, window.innerHeight / 2);
+        ct.translate(ca.width / 2, ca.height / 2);
         ct.scale(scale, -scale);
+
     }
     window.addEventListener('resize', resize);
     ct.save();
@@ -189,7 +191,7 @@ function gcd(a, b) {
 
         // each in n2
         if (showShapeA) {
-            ct.lineWidth = amp(1, t) / scale;
+            ct.lineWidth = amp(1, t) * lineWidthScale;
             ct.strokeStyle = colors[0];
             ct.beginPath();
             for (let j = 0; j < n2; ++j) {
@@ -204,7 +206,7 @@ function gcd(a, b) {
 
         // each in n1
         if (showShapeB) {
-            ct.lineWidth = amp(0, t) / scale;
+            ct.lineWidth = amp(0, t) * lineWidthScale;
             ct.strokeStyle = colors[1];
             ct.beginPath();
             for (let i = 0; i < n1; ++i) {
@@ -220,7 +222,7 @@ function gcd(a, b) {
         // star
         if (showStar) {
             ct.beginPath();
-            ct.lineWidth = amp(2, t) / scale;
+            ct.lineWidth = amp(2, t) * lineWidthScale;
             ct.strokeStyle = colors[2];
             for (let h = 0; h < commonDivisor; ++h) {
                 let a1 = h * tau / (n1 + n2);
@@ -247,16 +249,12 @@ function gcd(a, b) {
                 let cy = r1 * Math.sin(a1);
                 ct.moveTo(cx + r2, cy);
                 ct.arc(cx, cy, r2, 0, tau, false);
-                // ct.moveTo(0, 0);
-                // ct.lineTo(cordMid * Math.cos(a1), cordMid * Math.sin(a1));
             }
-            // ct.moveTo(1.0, 0.0);
-            // ct.lineTo(1.0 - cordLength, 0.0);
             ct.stroke();
         }
 
         if (showPath) {
-            ct.lineWidth = amp(2, t) / scale;
+            ct.lineWidth = amp(2, t) * lineWidthScale;
             ct.strokeStyle = colors[3];
             ct.beginPath();
             for (let q = 0; q < commonDivisor; ++q) {

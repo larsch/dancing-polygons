@@ -14,9 +14,11 @@
 
         div.panel {
             position: absolute;
+            top: 0px;
+            left: 0px;
             display: inline;
             float: left;
-            z-index: -1;
+            z-index: 5;
             font-family: sans-serif;
             font-size: smaller;
             user-select: none;
@@ -39,13 +41,9 @@
             position: relative;
         }
 
-        .container div.panel,
         canvas {
-            position: absolute;
-        }
-
-        canvas {
-            z-index: -1;
+            display:inline;
+            margin: 0;
         }
 
         label {
@@ -57,8 +55,7 @@
 <body>
     <div class="container">
 
-        <div class="panel">
-            <canvas id="canvas"></canvas>
+        <div class="panel" id="panel">
             <div class="range">
                 <label for="n1">A:</label>
                 <input type="range" min="1" max="13" value="4" class="slider" id="n1" name="n1"><br>
@@ -113,6 +110,7 @@
             </div>
             <a href="https://github.com/larsch/dancing-polygons">github.com/larsch/dancing-polygons</a>
         </div>
+        <canvas id="canvas"></canvas>
         <script src="dancing-polygons.js"></script>
 </body>
 
