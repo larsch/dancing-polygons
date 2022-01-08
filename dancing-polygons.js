@@ -97,6 +97,10 @@
     let showCircles = document.getElementById('show-circles').checked;
     let cycleShapes = document.getElementById('cycle-shapes').checked;
     let showStar = document.getElementById('show-star').checked
+    let relativeSpeed = 1;
+    let timeReference = null;
+    let lastTime = null;
+    let lastRenderTime = null;
 
     document.addEventListener('keypress', (e) => {
         if (e.key == 'd') {
@@ -121,6 +125,12 @@
             showStar = !showStar;
             document.getElementById('show-star').checked = showStar;
         }
+    });
+
+    document.getElementById("speed").addEventListener("input", function (e) {
+        relativeSpeed = parseFloat(e.target.value);
+        timeReference = lastTime;
+        timeOffset = lastRenderTime;
     });
 
     document.getElementById("n1").addEventListener("input", function (e) {
@@ -173,7 +183,20 @@
         showStar = e.target.checked;
     });
 
-    function render(t) {
+    function render(time) {
+        let t;
+        if (lastTime === null) {
+            lastTime = time;
+            t = time;
+            timeReference = t;
+            lastRenderTime = t;
+            timeOffset = 0;
+        } else {
+            t = timeOffset + (time - timeReference) * relativeSpeed;
+            lastTime = time;
+            lastRenderTime = t;
+        }
+
         ct.clearRect(-2.0, -2.0, 4.0, 4.0);
         ct.save();
 
