@@ -262,6 +262,7 @@
                 }
                 ct.closePath();
             }
+            ct.lineJoin = 'round';
             ct.stroke();
         }
 
