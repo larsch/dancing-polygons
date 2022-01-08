@@ -85,8 +85,8 @@
     calculateRadii();
 
     let showDots = document.getElementById('show-dots').checked
-    let showShapeA = document.getElementById('shape-a').checked;
-    let showShapeB = document.getElementById('shape-b').checked;
+    let showInnerPolygons = document.getElementById('show-inner-polygons').checked;
+    let showOuterPolygons = document.getElementById('show-outer-polygons').checked;
     let showPath = document.getElementById('path').checked;
     let showCircles = document.getElementById('show-circles').checked;
     let cycleShapes = document.getElementById('cycle-shapes').checked;
@@ -103,12 +103,12 @@
         } else if (e.key == 'c') {
             showCircles = !showCircles;
             document.getElementById('show-circles').checked = showCircles;
-        } else if (e.key == 'a') {
-            showShapeA = !showShapeA;
-            document.getElementById('shape-a').checked = showShapeA;
-        } else if (e.key == 'b') {
-            showShapeB = !showShapeB;
-            document.getElementById('shape-b').checked = showShapeB;
+        } else if (e.key == 'i') {
+            showInnerPolygons = !showInnerPolygons;
+            document.getElementById('show-inner-polygons').checked = showInnerPolygons;
+        } else if (e.key == 'o') {
+            showOuterPolygons = !showOuterPolygons;
+            document.getElementById('show-outer-polygons').checked = showOuterPolygons;
         } else if (e.key == 'p') {
             showPath = !showPath;
             document.getElementById('path').checked = showPath;
@@ -118,6 +118,12 @@
         } else if (e.key == 's') {
             showStar = !showStar;
             document.getElementById('show-star').checked = showStar;
+        } else if (e.key == 'a') {
+            document.getElementById('n1').focus();
+        } else if (e.key == 'b') {
+            document.getElementById('n2').focus();
+        } else if (e.key == 'e') {
+            document.getElementById('speed').focus();
         }
     });
 
@@ -157,12 +163,12 @@
         showPath = e.target.checked;
     });
 
-    document.getElementById("shape-a").addEventListener("change", function (e) {
-        showShapeA = e.target.checked;
+    document.getElementById("show-inner-polygons").addEventListener("change", function (e) {
+        showInnerPolygons = e.target.checked;
     });
 
-    document.getElementById("shape-b").addEventListener("change", function (e) {
-        showShapeB = e.target.checked;
+    document.getElementById("show-outer-polygons").addEventListener("change", function (e) {
+        showOuterPolygons = e.target.checked;
     });
 
     document.getElementById("show-circles").addEventListener("change", function (e) {
@@ -215,8 +221,7 @@
             }
         }
 
-        // each in n2
-        if (showShapeA) {
+        if (showOuterPolygons) {
             ct.lineWidth = amp(1, t) * lineWidthScale;
             ct.strokeStyle = colors[0];
             ct.beginPath();
@@ -230,8 +235,7 @@
             }
         }
 
-        // each in n1
-        if (showShapeB) {
+        if (showInnerPolygons) {
             ct.lineWidth = amp(0, t) * lineWidthScale;
             ct.strokeStyle = colors[1];
             ct.beginPath();
