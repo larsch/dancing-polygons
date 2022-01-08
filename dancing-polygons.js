@@ -191,6 +191,10 @@
         showStar = e.target.checked;
     });
 
+    let frameCount = 0;
+    let lastFrameUpdate = 0;
+    let fps = null;
+
     function render(time) {
         let realTime = time;
         let t;
@@ -202,8 +206,16 @@
             timeOffset = 0;
         } else {
             t = timeOffset + (time - timeReference) * relativeSpeed;
+            
             lastTime = time;
             lastRenderTime = t;
+
+            frameCount++;
+            if (time - lastFrameUpdate > 1000.0) {
+                fps = frameCount * 1000.0 / (time - lastFrameUpdate);
+                frameCount = 0;
+                lastFrameUpdate = time;
+            }
         }
 
         ct.clearRect(0, 0, ca.width, ca.height);
@@ -214,6 +226,10 @@
         ct.font = (24 * devicePixelRatio) + 'px serif';
         let text = (commonDivisor > 1) ? `${commonDivisor}x{${p}/${q}}` : `{${p}/${q}}`;
         ct.fillText(text, 10 * devicePixelRatio, ca.height - 18 * devicePixelRatio);
+
+        if (fps !== null) {
+            ct.fillText(fps, 10 * devicePixelRatio, ca.height - (18 + 24) * devicePixelRatio);
+        }
 
         ct.translate(ca.width / 2, ca.height / 2);
         ct.scale(scale, -scale);
