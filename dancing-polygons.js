@@ -179,6 +179,10 @@
         showCircles = e.target.checked;
     });
 
+    document.getElementById("show-ghost-polygon").addEventListener("change", function (e) {
+        showGhostPolygon = e.target.checked;
+    });
+
     document.getElementById("cycle-shapes").addEventListener("change", function (e) {
         cycleShapes = e.target.checked;
     });
