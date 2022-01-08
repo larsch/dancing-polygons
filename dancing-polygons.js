@@ -11,7 +11,7 @@
     let ca = document.getElementById("canvas");
     let ct = ca.getContext("2d");
     let tau = 6.28318530718;
-    const colors = ['#7FBD6B', '#6BA8BD', '#A86BBD', '#BD806B'];
+    const colors = ['#7FBD6B', '#6BA8BD', '#A86BBD', '#BD806B', '#988B9B', '#887B8B'];
 
     let scale = 1.0;
     let lineWidthScale = 1.0;
@@ -31,7 +31,6 @@
         ct.save(); // save default again
         ct.translate(ca.width / 2, ca.height / 2);
         ct.scale(scale, -scale);
-
     }
     window.addEventListener('resize', resize);
     ct.save();
@@ -97,7 +96,7 @@
     let showCircles = document.getElementById('show-circles').checked;
     let cycleShapes = document.getElementById('cycle-shapes').checked;
     let showStar = document.getElementById('show-star').checked
-    let relativeSpeed = 1;
+    let relativeSpeed = parseFloat(document.getElementById("speed").value);
     let timeReference = null;
     let lastTime = null;
     let lastRenderTime = null;
@@ -262,20 +261,6 @@
             ct.stroke();
         }
 
-        if (showCircles) {
-            ct.beginPath();
-            ct.lineWidth = 2 / scale;
-            ct.strokeStyle = 'black';
-            for (let i = 0; i < n1; ++i) {
-                let a1 = t * tau * speed + i * tau / n1;
-                let cx = r1 * Math.cos(a1);
-                let cy = r1 * Math.sin(a1);
-                ct.moveTo(cx + r2, cy);
-                ct.arc(cx, cy, r2, 0, tau, false);
-            }
-            ct.stroke();
-        }
-
         if (showPath) {
             ct.lineWidth = amp(2, t) * lineWidthScale;
             ct.strokeStyle = colors[3];
@@ -289,6 +274,34 @@
                 ct.closePath();
                 ct.restore();
             }
+            ct.stroke();
+        }
+
+        if (showCircles) {
+            /* Chose a dash length that makes everything align */
+            let dashLength = r2 * tau / (n1 * n2) * commonDivisor;
+            while (dashLength > 0.1)
+                dashLength *= 0.5;
+
+            /* Draw rolling circles */
+            ct.beginPath();
+            for (let i = 0; i < n1; ++i) {
+                ct.lineWidth = 2 * lineWidthScale;
+                let a1 = t * tau * speed + i * tau / n1;
+                let cx = r1 * Math.cos(a1);
+                let cy = r1 * Math.sin(a1);
+                let a2 = - t * tau * speed * (r1 / r2) + 0 * tau / n2;
+                ct.moveTo(cx + r2 * Math.cos(a2), cy + r2 * Math.sin(a2));
+                ct.arc(cx, cy, r2, a2, a2 + tau, false);
+            }
+            ct.setLineDash([dashLength * 5 / 6, dashLength / 6]);
+            ct.strokeStyle = colors[4];
+            ct.stroke();
+
+            /* Draw the outer circle */
+            ct.beginPath();
+            ct.moveTo(1, 0);
+            ct.arc(0, 0, 1, 0, tau, false);
             ct.stroke();
         }
 
