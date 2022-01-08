@@ -192,6 +192,7 @@
     });
 
     function render(time) {
+        let realTime = time;
         let t;
         if (lastTime === null) {
             lastTime = time;
@@ -228,7 +229,7 @@
         }
 
         if (showOuterPolygons) {
-            ct.lineWidth = cycleLineThickness(1, t) * pixelSize;
+            ct.lineWidth = cycleLineThickness(1, realTime) * pixelSize;
             ct.strokeStyle = colors[0];
             ct.beginPath();
             for (let j = 0; j < edgeCount; ++j) {
@@ -242,7 +243,7 @@
         }
 
         if (showInnerPolygons) {
-            ct.lineWidth = cycleLineThickness(0, t) * pixelSize;
+            ct.lineWidth = cycleLineThickness(0, realTime) * pixelSize;
             ct.strokeStyle = colors[1];
             ct.beginPath();
             for (let i = 0; i < polygonCount; ++i) {
@@ -258,7 +259,7 @@
         // star
         if (showStar) {
             ct.beginPath();
-            ct.lineWidth = cycleLineThickness(2, t) * pixelSize;
+            ct.lineWidth = cycleLineThickness(2, realTime) * pixelSize;
             ct.strokeStyle = colors[2];
             for (let subStarIndex = 0; subStarIndex < commonDivisor; ++subStarIndex) {
                 let firstVertexAngle = subStarIndex * tau / (polygonCount + edgeCount);
@@ -275,7 +276,7 @@
         }
 
         if (showPath) {
-            ct.lineWidth = cycleLineThickness(2, t) * pixelSize;
+            ct.lineWidth = cycleLineThickness(2, realTime) * pixelSize;
             ct.strokeStyle = colors[3];
             ct.beginPath();
             for (let subStarIndex = 0; subStarIndex < commonDivisor; ++subStarIndex) {
