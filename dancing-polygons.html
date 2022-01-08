@@ -83,17 +83,17 @@
 
         <div class="panel" id="panel">
             <div class="range">
-                <label for="n1" title="Number of inner polygons (shortcut: a)">
+                <label title="Number of inner polygons (shortcut: a)">
                     A
-                    <input type="range" min="1" max="13" value="4" class="slider" id="n1" name="n1">
-                    <span id="n1value">4</span>
+                    <input type="range" min="1" max="13" value="4" class="slider" id="polygon-count">
+                    <span id="polygon-count-value">4</span>
                 </label>
             </div>
             <div class="range">
                 <label for="n2" title="Number of polygon sides (shortcut: b)">
                     B
-                    <input type="range" min="1" max="13" value="3" class="slider" id="n2" name="n2">
-                    <span id="n2value">3</span>
+                    <input type="range" min="1" max="13" value="3" class="slider" id="polygon-side-count">
+                    <span id="polygon-side-count-value">3</span>
                 </label>
             </div>
             <div>
@@ -138,12 +138,12 @@
                     Cycle shapes
                 </label>
             </div>
-			<div class="range">
-				<label for="speed" title="Speed (shortcut: e)">
+            <div class="range">
+                <label for="speed" title="Speed (shortcut: e)">
                     Speed
                     <input type="range" min="-5" max="5" step="0.1" value="1" class="slider" id="speed" name="speed">
                 </label>
-			</div>
+            </div>
         </div>
         <a class="github" href="https://github.com/larsch/dancing-polygons">github.com/larsch</a>
         <canvas id="canvas"></canvas>

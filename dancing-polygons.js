@@ -8,13 +8,13 @@
         return a;
     }
 
-    let ca = document.getElementById("canvas");
-    let ct = ca.getContext("2d");
-    let tau = 6.28318530718;
+    const ca = document.getElementById("canvas");
+    const ct = ca.getContext("2d");
+    const tau = 6.28318530718;
     const colors = ['#7FBD6B', '#6BA8BD', '#A86BBD', '#BD806B', '#988B9B', '#887B8B'];
 
     let scale = 1.0;
-    let lineWidthScale = 1.0;
+    let pixelSize = 1.0;
 
     function resize() {
         let dpr;
@@ -25,15 +25,14 @@
         ca.height = dpr * window.innerHeight;
         let dim = Math.min(ca.width, ca.height);
         scale = dim * 0.48;
-        lineWidthScale = dpr / scale;
+        pixelSize = dpr / scale;
     }
     window.addEventListener('resize', resize);
     ct.save();
     resize();
 
-    let period = 10000.0;
-
-    function amp(n, t) {
+    function cycleLineThickness(n, t) {
+        const period = 10000.0;
         if (!cycleShapes)
             return 2.0;
         let phase = (t % period) / period;
@@ -43,42 +42,42 @@
         return Math.max(0.25, Math.min(3.0, phase));
     }
 
-    let n1 = parseInt(document.getElementById("n1").value);
-    let n2 = parseInt(document.getElementById("n2").value);
-    document.getElementById("n1value").textContent = n1;
-    document.getElementById("n2value").textContent = n2;
-    let r1;
-    let r2;
+    let polygonCount = parseInt(document.getElementById("polygon-count").value);
+    let edgeCount = parseInt(document.getElementById("polygon-side-count").value);
+    document.getElementById("polygon-count-value").textContent = polygonCount;
+    document.getElementById("polygon-side-count-value").textContent = edgeCount;
+    let rollRadius;
+    let circleRadius;
     let cordLength, cordMid;
-    let r2f;
+    let polygonRadius;
     let commonDivisor = 1;
     let pts = [];
     let path;
     let speed = 1.0 / 12000.0;
 
     function calculateRadii() {
-        r1 = Math.max(n1, n2) / (n1 + n2);
-        r2 = Math.min(n1, n2) / (n1 + n2);
-        let arcLength = tau * Math.min(n1, n2) / (n1 + n2);
+        rollRadius = Math.max(polygonCount, edgeCount) / (polygonCount + edgeCount);
+        circleRadius = Math.min(polygonCount, edgeCount) / (polygonCount + edgeCount);
+        let arcLength = tau * Math.min(polygonCount, edgeCount) / (polygonCount + edgeCount);
         let x = Math.cos(arcLength) - 1.0;
         let y = Math.sin(arcLength);
         cordLength = Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2.0));
         cordMid = Math.sqrt(1.0 - Math.pow(cordLength / 2, 2.0));
         let cordRest = 1.0 - cordMid;
-        r2f = cordRest - r2;
-        commonDivisor = gcd(n1, n2);
+        polygonRadius = cordRest - circleRadius;
+        commonDivisor = gcd(polygonCount, edgeCount);
 
-        pts.length = n1 * n2;
+        pts.length = polygonCount * edgeCount;
         for (let i = 0; i < pts.length; ++i) {
             pts[i] = [0, 0];
         }
 
         path = [];
-        for (let f = 0; f < n2 / commonDivisor; f += 1e-2) {
-            let a1 = f * tau;
-            let a2 = - f * tau * (r1 / r2);
-            let cx = r1 * Math.cos(a1) + r2f * Math.cos(a2);
-            let cy = r1 * Math.sin(a1) + r2f * Math.sin(a2);
+        for (let f = 0; f < edgeCount / commonDivisor; f += 1e-2) {
+            let rollerAngle = f * tau;
+            let vertexAngle = - f * tau * (rollRadius / circleRadius);
+            let cx = rollRadius * Math.cos(rollerAngle) + polygonRadius * Math.cos(vertexAngle);
+            let cy = rollRadius * Math.sin(rollerAngle) + polygonRadius * Math.sin(vertexAngle);
             path.push([cx, cy]);
         }
     }
@@ -95,6 +94,7 @@
     let timeReference = null;
     let lastTime = null;
     let lastRenderTime = null;
+    let timeOffset = null;
 
     document.addEventListener('keypress', (e) => {
         if (e.key == 'd') {
@@ -119,9 +119,9 @@
             showStar = !showStar;
             document.getElementById('show-star').checked = showStar;
         } else if (e.key == 'a') {
-            document.getElementById('n1').focus();
+            document.getElementById('polygon-count').focus();
         } else if (e.key == 'b') {
-            document.getElementById('n2').focus();
+            document.getElementById('polygon-side-count').focus();
         } else if (e.key == 'e') {
             document.getElementById('speed').focus();
         }
@@ -133,24 +133,24 @@
         timeOffset = lastRenderTime;
     });
 
-    document.getElementById("n1").addEventListener("input", function (e) {
-        n1 = parseInt(e.target.value);
-        document.getElementById("n1value").textContent = e.target.value;
-        if (n1 < n2) {
-            document.getElementById("n2").value = n1;
-            document.getElementById("n2value").textContent = n1;
-            n2 = n1;
+    document.getElementById("polygon-count").addEventListener("input", function (e) {
+        polygonCount = parseInt(e.target.value);
+        document.getElementById("polygon-count-value").textContent = e.target.value;
+        if (polygonCount < edgeCount) {
+            document.getElementById("polygon-side-count").value = polygonCount;
+            document.getElementById("polygon-side-count-value").textContent = polygonCount;
+            edgeCount = polygonCount;
         }
         calculateRadii();
     })
 
-    document.getElementById("n2").addEventListener("input", function (e) {
-        n2 = parseInt(e.target.value);
-        document.getElementById("n2value").textContent = e.target.value;
-        if (n2 > n1) {
-            document.getElementById("n1").value = n2;
-            document.getElementById("n1value").textContent = n2;
-            n1 = n2;
+    document.getElementById("polygon-side-count").addEventListener("input", function (e) {
+        edgeCount = parseInt(e.target.value);
+        document.getElementById("polygon-side-count-value").textContent = e.target.value;
+        if (edgeCount > polygonCount) {
+            document.getElementById("polygon-count").value = edgeCount;
+            document.getElementById("polygon-count-value").textContent = edgeCount;
+            polygonCount = edgeCount;
         }
         calculateRadii();
     })
@@ -200,8 +200,8 @@
         ct.clearRect(0, 0, ca.width, ca.height);
         ct.save();
 
-        let p = (n1 + n2) / commonDivisor;
-        let q = n2 / commonDivisor;
+        let p = (polygonCount + edgeCount) / commonDivisor;
+        let q = edgeCount / commonDivisor;
         ct.font = (24 * devicePixelRatio) + 'px serif';
         let text = (commonDivisor > 1) ? `${commonDivisor}x{${p}/${q}}` : `{${p}/${q}}`;
         ct.fillText(text, 10 * devicePixelRatio, ca.height - 18 * devicePixelRatio);
@@ -209,26 +209,24 @@
         ct.translate(ca.width / 2, ca.height / 2);
         ct.scale(scale, -scale);
 
-        for (let i = 0; i < n1; ++i) {
-            for (let j = 0; j < n2; ++j) {
-                let a1 = t * tau * speed + i * tau / n1;
-                let a2 = - t * tau * speed * (r1 / r2) + j * tau / n2;
-                let cx = r1 * Math.cos(a1) + r2f * Math.cos(a2);
-                let cy = r1 * Math.sin(a1) + r2f * Math.sin(a2);
-                let pt = pts[i * n2 + j];
-                pt[0] = cx;
-                pt[1] = cy;
+        for (let i = 0; i < polygonCount; ++i) {
+            for (let j = 0; j < edgeCount; ++j) {
+                let rollerAngle = t * tau * speed + i * tau / polygonCount;
+                let vertexAngle = - t * tau * speed * (rollRadius / circleRadius) + j * tau / edgeCount;
+                let pt = pts[i * edgeCount + j];
+                pt[0] = rollRadius * Math.cos(rollerAngle) + polygonRadius * Math.cos(vertexAngle);
+                pt[1] = rollRadius * Math.sin(rollerAngle) + polygonRadius * Math.sin(vertexAngle);
             }
         }
 
         if (showOuterPolygons) {
-            ct.lineWidth = amp(1, t) * lineWidthScale;
+            ct.lineWidth = cycleLineThickness(1, t) * pixelSize;
             ct.strokeStyle = colors[0];
             ct.beginPath();
-            for (let j = 0; j < n2; ++j) {
+            for (let j = 0; j < edgeCount; ++j) {
                 ct.moveTo(...pts[j]);
-                for (let i = 1; i < n1; ++i) {
-                    ct.lineTo(...pts[i * n2 + j]);
+                for (let i = 1; i < polygonCount; ++i) {
+                    ct.lineTo(...pts[i * edgeCount + j]);
                 }
                 ct.closePath();
                 ct.stroke();
@@ -236,13 +234,13 @@
         }
 
         if (showInnerPolygons) {
-            ct.lineWidth = amp(0, t) * lineWidthScale;
+            ct.lineWidth = cycleLineThickness(0, t) * pixelSize;
             ct.strokeStyle = colors[1];
             ct.beginPath();
-            for (let i = 0; i < n1; ++i) {
-                ct.moveTo(...pts[i * n2]);
-                for (let j = 1; j < n2; ++j) {
-                    ct.lineTo(...pts[i * n2 + j], 4 / scale, 0, tau, false);
+            for (let i = 0; i < polygonCount; ++i) {
+                ct.moveTo(...pts[i * edgeCount]);
+                for (let j = 1; j < edgeCount; ++j) {
+                    ct.lineTo(...pts[i * edgeCount + j], 4 / scale, 0, tau, false);
                 }
                 ct.closePath();
             }
@@ -252,17 +250,15 @@
         // star
         if (showStar) {
             ct.beginPath();
-            ct.lineWidth = amp(2, t) * lineWidthScale;
+            ct.lineWidth = cycleLineThickness(2, t) * pixelSize;
             ct.strokeStyle = colors[2];
-            for (let h = 0; h < commonDivisor; ++h) {
-                let a1 = h * tau / (n1 + n2);
-                ct.moveTo(Math.cos(a1), Math.sin(a1));
-                let steps = (n1 + n2) / commonDivisor;
-                for (let i = 1; i < steps; ++i) {
-                    let a = i * tau * Math.max(n1, n2) / (n1 + n2) + a1;
-                    let x = Math.cos(a);
-                    let y = Math.sin(a);
-                    ct.lineTo(x, y);
+            for (let subStarIndex = 0; subStarIndex < commonDivisor; ++subStarIndex) {
+                let firstVertexAngle = subStarIndex * tau / (polygonCount + edgeCount);
+                ct.moveTo(Math.cos(firstVertexAngle), Math.sin(firstVertexAngle));
+                let vertexCount = (polygonCount + edgeCount) / commonDivisor;
+                for (let i = 1; i < vertexCount; ++i) {
+                    let vertexAngle = i * tau * Math.max(polygonCount, edgeCount) / (polygonCount + edgeCount) + firstVertexAngle;
+                    ct.lineTo(Math.cos(vertexAngle), Math.sin(vertexAngle));
                 }
                 ct.closePath();
             }
@@ -271,12 +267,12 @@
         }
 
         if (showPath) {
-            ct.lineWidth = amp(2, t) * lineWidthScale;
+            ct.lineWidth = cycleLineThickness(2, t) * pixelSize;
             ct.strokeStyle = colors[3];
             ct.beginPath();
-            for (let q = 0; q < commonDivisor; ++q) {
+            for (let subStarIndex = 0; subStarIndex < commonDivisor; ++subStarIndex) {
                 ct.save();
-                ct.rotate(q * tau / (n1 + n2));
+                ct.rotate(subStarIndex * tau / (polygonCount + edgeCount));
                 ct.moveTo(...path[0]);
                 for (let i = 1; i < path.length; ++i)
                     ct.lineTo(...path[i]);
@@ -288,20 +284,20 @@
 
         if (showCircles) {
             /* Chose a dash length that makes everything align */
-            let dashLength = r2 * tau / (n1 * n2) * commonDivisor;
-            while (dashLength > 0.1)
-                dashLength *= 0.5;
+            let dashLength = circleRadius * tau / (polygonCount * edgeCount) * commonDivisor;
+            /* Ensure a maximum dash length */
+            dashLength /= Math.max(1.0, Math.round(dashLength / 0.05));
 
             /* Draw rolling circles */
             ct.beginPath();
-            for (let i = 0; i < n1; ++i) {
-                ct.lineWidth = 2 * lineWidthScale;
-                let a1 = t * tau * speed + i * tau / n1;
-                let cx = r1 * Math.cos(a1);
-                let cy = r1 * Math.sin(a1);
-                let a2 = - t * tau * speed * (r1 / r2) + 0 * tau / n2;
-                ct.moveTo(cx + r2 * Math.cos(a2), cy + r2 * Math.sin(a2));
-                ct.arc(cx, cy, r2, a2, a2 + tau, false);
+            ct.lineWidth = 2 * pixelSize;
+            for (let i = 0; i < polygonCount; ++i) {
+                let rollerAngle = t * tau * speed + i * tau / polygonCount;
+                let firstVertexAngle = - t * tau * speed * (rollRadius / circleRadius);
+                let rollerX = rollRadius * Math.cos(rollerAngle);
+                let rollerY = rollRadius * Math.sin(rollerAngle);
+                ct.moveTo(rollerX + circleRadius * Math.cos(firstVertexAngle), rollerY + circleRadius * Math.sin(firstVertexAngle));
+                ct.arc(rollerX, rollerY, circleRadius, firstVertexAngle, firstVertexAngle + tau, false);
             }
             ct.setLineDash([dashLength * 5 / 6, dashLength / 6]);
             ct.strokeStyle = colors[4];
@@ -317,11 +313,11 @@
         // dots
         if (showDots) {
             ct.beginPath();
-            for (let i = 0; i < n1; ++i) {
-                for (let j = 0; j < n2; ++j) {
-                    const pt = pts[i * n2 + j];
-                    ct.moveTo(...pt);
-                    ct.arc(...pt, 4 * lineWidthScale, 0, tau, false);
+            for (let i = 0; i < polygonCount; ++i) {
+                for (let j = 0; j < edgeCount; ++j) {
+                    const point = pts[i * edgeCount + j];
+                    ct.moveTo(...point);
+                    ct.arc(...point, 4 * pixelSize, 0, tau, false);
                 }
             }
             ct.fill();
