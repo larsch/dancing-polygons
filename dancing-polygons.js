@@ -88,6 +88,7 @@
     let showOuterPolygons = document.getElementById('show-outer-polygons').checked;
     let showPath = document.getElementById('path').checked;
     let showCircles = document.getElementById('show-circles').checked;
+    let showGhostPolygon = document.getElementById('show-ghost-polygon').checked;
     let cycleShapes = document.getElementById('cycle-shapes').checked;
     let showStar = document.getElementById('show-star').checked
     let relativeSpeed = parseFloat(document.getElementById("speed").value);
@@ -112,6 +113,9 @@
         } else if (e.key == 'p') {
             showPath = !showPath;
             document.getElementById('path').checked = showPath;
+        } else if (e.key == 'g') {
+            showGhostPolygon = !showGhostPolygon;
+            document.getElementById('show-ghost-polygon').checked = showGhostPolygon;
         } else if (e.key == 'y') {
             cycleShapes = !cycleShapes;
             document.getElementById('cycle-shapes').checked = cycleShapes;
@@ -283,6 +287,7 @@
         }
 
         if (showCircles) {
+            ct.save();
             /* Chose a dash length that makes everything align */
             let dashLength = circleRadius * tau / (polygonCount * edgeCount) * commonDivisor;
             /* Ensure a maximum dash length */
@@ -307,6 +312,23 @@
             ct.beginPath();
             ct.moveTo(1, 0);
             ct.arc(0, 0, 1, 0, tau, false);
+            ct.stroke();
+            ct.restore();
+        }
+
+        if (showGhostPolygon) {
+            ct.beginPath();
+            let deltaPolygonSides = polygonCount - edgeCount;
+            let deltaPolygonRadius = rollRadius - polygonRadius;
+            let deltaStartAngle = (polygonCount / deltaPolygonSides * 2) * t * tau * speed;
+            if (deltaPolygonSides % 2 == polygonCount % 2)
+                deltaStartAngle += tau / deltaPolygonSides / 2;
+            for (let vertexIndex = 0; vertexIndex < deltaPolygonSides; ++vertexIndex) {
+                let vertexAngle = deltaStartAngle + vertexIndex * tau / deltaPolygonSides;
+                ct.lineTo(deltaPolygonRadius * Math.cos(vertexAngle), deltaPolygonRadius * Math.sin(vertexAngle));
+            }
+            ct.lineWidth = 2 * pixelSize;
+            ct.closePath();
             ct.stroke();
         }
 
