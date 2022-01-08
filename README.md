@@ -7,7 +7,7 @@ Inspired by Mathologer's [3-4-7 miracle video](https://youtu.be/oEN0o9ZGmOM).
 
 ## Description
 
-The outer circle has *A* smaller circles rolling on the inside it's
+The outer circle has *A* smaller circles rolling on the inside of it's
 circumference. Each smaller circle contains a regular polygon with *B* sides
 around its centre.
 
@@ -17,8 +17,8 @@ with *p=A+B* and q=*B*. Otherwise, multiple polygons are needed to complete the
 star (e.g. two triangles making a hexagram).
 
 The size of the polygons inside the inner circles is chosen such that it exactly
-touches the lines of the star that is also a cord of the outer circle.
+touches the lines of the star (which are cords of the outer circle).
 
-A second set of polygons can be constructed by connecting the first vertex of
+A second set of polygons can be constructed by connecting the first vertices of
 each original polygon, all the second vertices, and so one. These will also be
 regular polygons with *A* sides.

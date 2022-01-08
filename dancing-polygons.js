@@ -26,11 +26,6 @@
         let dim = Math.min(ca.width, ca.height);
         scale = dim * 0.48;
         lineWidthScale = dpr / scale;
-
-        ct.restore(); // restore default transformation
-        ct.save(); // save default again
-        ct.translate(ca.width / 2, ca.height / 2);
-        ct.scale(scale, -scale);
     }
     window.addEventListener('resize', resize);
     ct.save();
@@ -196,8 +191,17 @@
             lastRenderTime = t;
         }
 
-        ct.clearRect(-2.0, -2.0, 4.0, 4.0);
+        ct.clearRect(0, 0, ca.width, ca.height);
         ct.save();
+
+        let p = (n1 + n2) / commonDivisor;
+        let q = n2 / commonDivisor;
+        ct.font = (24 * devicePixelRatio) + 'px serif';
+        let text = (commonDivisor > 1) ? `${commonDivisor}x{${p}/${q}}` : `{${p}/${q}}`;
+        ct.fillText(text, 10 * devicePixelRatio, ca.height - 18 * devicePixelRatio);
+
+        ct.translate(ca.width / 2, ca.height / 2);
+        ct.scale(scale, -scale);
 
         for (let i = 0; i < n1; ++i) {
             for (let j = 0; j < n2; ++j) {
