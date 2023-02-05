@@ -52,8 +52,12 @@
     let polygonRadius;
     let commonDivisor = 1;
     let pts = [];
-    let path;
+    let pathPath, polygonPath;
+    let outerPath;
     let speed = 1.0 / 12000.0;
+    let pathRender = false;
+    let dotPath;
+
 
     function calculateRadii() {
         rollRadius = Math.max(polygonCount, edgeCount) / (polygonCount + edgeCount);
@@ -72,14 +76,32 @@
             pts[i] = [0, 0];
         }
 
-        path = [];
-        for (let f = 0; f < edgeCount / commonDivisor; f += 1e-2) {
+        pathPath = new Path2D();
+        for (let f = 0; f < edgeCount / commonDivisor; f += 3e-2) {
             let rollerAngle = f * tau;
             let vertexAngle = - f * tau * (rollRadius / circleRadius);
             let cx = rollRadius * Math.cos(rollerAngle) + polygonRadius * Math.cos(vertexAngle);
             let cy = rollRadius * Math.sin(rollerAngle) + polygonRadius * Math.sin(vertexAngle);
-            path.push([cx, cy]);
+            pathPath.lineTo(cx, cy);
         }
+        pathPath.closePath();
+
+        polygonPath = new Path2D();
+        dotPath = new Path2D();
+        for (let vertexIndex = 0; vertexIndex < edgeCount; ++vertexIndex) {
+            let vertexAngle = vertexIndex * tau / edgeCount;
+            const dotX = polygonRadius * Math.cos(vertexAngle);
+            const dotY = polygonRadius * Math.sin(vertexAngle);
+            polygonPath.lineTo(dotX, dotY);
+
+            let dotRadius = 4 * pixelSize;
+            dotPath.moveTo(dotX + dotRadius, dotY);
+            dotPath.arc(dotX, dotY, dotRadius, 0, tau, false);
+        }
+        polygonPath.closePath();
+
+        outerPath = new Path2D();
+        for (let vertexIndex = 0; vertexIndex < polygonCount; ++vertexIndex)
     }
     calculateRadii();
 
@@ -206,7 +228,7 @@
             timeOffset = 0;
         } else {
             t = timeOffset + (time - timeReference) * relativeSpeed;
-            
+
             lastTime = time;
             lastRenderTime = t;
 
@@ -261,15 +283,29 @@
         if (showInnerPolygons) {
             ct.lineWidth = cycleLineThickness(0, realTime) * pixelSize;
             ct.strokeStyle = colors[1];
-            ct.beginPath();
-            for (let i = 0; i < polygonCount; ++i) {
-                ct.moveTo(...pts[i * edgeCount]);
-                for (let j = 1; j < edgeCount; ++j) {
-                    ct.lineTo(...pts[i * edgeCount + j], 4 / scale, 0, tau, false);
+            if (pathRender) {
+                ct.save();
+                for (let i = 0; i < polygonCount; ++i) {
+                    ct.save();
+                    const rollerAngle = t * tau * speed + i * tau / polygonCount;
+                    ct.rotate(rollerAngle);
+                    ct.translate(rollRadius, 0);
+                    ct.rotate(-rollerAngle - t * tau * speed * (rollRadius / circleRadius));
+                    ct.stroke(polygonPath);
+                    ct.restore();
                 }
-                ct.closePath();
+                ct.restore();
+            } else {
+                ct.beginPath();
+                for (let i = 0; i < polygonCount; ++i) {
+                    ct.moveTo(...pts[i * edgeCount]);
+                    for (let j = 1; j < edgeCount; ++j) {
+                        ct.lineTo(...pts[i * edgeCount + j], 4 / scale, 0, tau, false);
+                    }
+                    ct.closePath();
+                }
+                ct.stroke();
             }
-            ct.stroke();
         }
 
         // star
@@ -294,17 +330,12 @@
         if (showPath) {
             ct.lineWidth = cycleLineThickness(2, realTime) * pixelSize;
             ct.strokeStyle = colors[3];
-            ct.beginPath();
+            ct.save();
             for (let subStarIndex = 0; subStarIndex < commonDivisor; ++subStarIndex) {
-                ct.save();
-                ct.rotate(subStarIndex * tau / (polygonCount + edgeCount));
-                ct.moveTo(...path[0]);
-                for (let i = 1; i < path.length; ++i)
-                    ct.lineTo(...path[i]);
-                ct.closePath();
-                ct.restore();
+                ct.stroke(pathPath);
+                ct.rotate(tau / (polygonCount + edgeCount));
             }
-            ct.stroke();
+            ct.restore();
         }
 
         if (showCircles) {
@@ -355,15 +386,30 @@
 
         // dots
         if (showDots) {
-            ct.beginPath();
-            for (let i = 0; i < polygonCount; ++i) {
-                for (let j = 0; j < edgeCount; ++j) {
-                    const point = pts[i * edgeCount + j];
-                    ct.moveTo(...point);
-                    ct.arc(...point, 4 * pixelSize, 0, tau, false);
+            if (pathRender) {
+                const baseAngle = t * tau * speed;
+                for (let i = 0; i < polygonCount; ++i) {
+                    ct.save();
+                    const rollerAngle = baseAngle + i * tau / polygonCount;
+                    ct.rotate(rollerAngle);
+                    ct.translate(rollRadius, 0);
+                    ct.rotate(-rollerAngle - baseAngle * (rollRadius / circleRadius));
+                    ct.fill(dotPath);
+                    ct.restore();
                 }
+            } else {
+                ct.beginPath();
+                const dotRadius = 4 * pixelSize;
+                for (let i = 0; i < polygonCount; ++i) {
+                    for (let j = 0; j < edgeCount; ++j) {
+                        const point = pts[i * edgeCount + j];
+                        ct.moveTo(point[0] + dotRadius, point[1]);
+                        ct.arc(...point, dotRadius, 0, tau, false);
+                    }
+                }
+                ct.fill();
+
             }
-            ct.fill();
         }
 
         ct.restore();
